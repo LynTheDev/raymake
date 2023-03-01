@@ -1,0 +1,100 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "ERROR: Missing folder name."
+    echo "USAGE: raymake (folder name)"
+    exit
+fi
+
+if [ -d "$1" ]; then
+    echo "ERROR: Project aleardy exists!"
+    exit
+fi
+
+echo "Creating project folder."
+mkdir -p $1
+cd $1
+echo "Done."
+
+echo "Creating Files."
+touch CMakeLists.txt
+touch batch.cpp
+mkdir src
+touch src/game.cpp
+mkdir include
+touch include/game.h
+mkdir lib
+echo "Done."
+
+echo "Obtaining Raylib."
+cd lib
+git clone https://github.com/raysan5/raylib
+cd ..
+echo "Done."
+
+echo "Creating game header."
+echo """#pragma once
+
+void init();
+void update(float dt);
+void draw();
+""" >> include/game.h
+echo "Done."
+
+echo "Creating game code base."
+echo """
+void init() {
+
+}
+
+void update(float dt) {
+
+}
+
+void draw() {
+
+}
+""" >> src/game.cpp
+echo "Done."
+echo "Don't forget to create actual game code!"
+
+echo "Creating batch."
+echo """#include \"./include/game.h\"
+#include <raylib.h>
+
+int main() {
+    init();
+
+    while(!WindowShouldClose()) {
+        auto dt = GetFrameTime();
+        update(dt);
+
+        BeginDrawing();
+            draw();
+        EndDrawing();
+    }
+return 0;
+}
+""" >> batch.cpp
+echo "Done."
+
+echo "Creating CMakeFile."
+echo """cmake_minimum_required(VERSION 3.10)
+project($1)
+
+add_sudirectory(lib/raylib)
+
+add_executable($1
+    batch.cpp
+
+    src/game.cpp
+    include/game.h
+)
+
+target_link_libraries($1
+    raylib
+)
+""" >> CMakeLists.txt
+echo "Done."
+
+echo "Happy coding."

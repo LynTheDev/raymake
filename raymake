@@ -23,17 +23,20 @@ mkdir src
 touch src/game.cpp
 mkdir include
 touch include/game.h
-mkdir lib
+mkdir external
 echo "Done."
 
 echo "Obtaining Raylib."
-cd lib
+cd external
 git clone https://github.com/raysan5/raylib
 cd ..
 echo "Done."
 
 echo "Creating game header."
 echo """#pragma once
+
+#include <raylib.h>
+#include <raymath.h>
 
 void init();
 void update(float dt);
@@ -42,7 +45,8 @@ void draw();
 echo "Done."
 
 echo "Creating game code base."
-echo """
+echo """#include \"game.h\"
+
 void init() {
 
 }
@@ -54,12 +58,16 @@ void update(float dt) {
 void draw() {
 
 }
+
+void unload() {
+
+}
 """ >> src/game.cpp
 echo "Done."
 echo "Don't forget to create actual game code!"
 
 echo "Creating batch."
-echo """#include \"./include/game.h\"
+echo """#include \"game.h\"
 #include <raylib.h>
 
 int main() {
@@ -73,6 +81,9 @@ int main() {
             draw();
         EndDrawing();
     }
+
+    unload();
+
 return 0;
 }
 """ >> batch.cpp
@@ -88,10 +99,13 @@ add_executable($1
     batch.cpp
 
     src/game.cpp
-    include/game.h
 )
 
-target_link_libraries($1
+target_include_directories($1 PRIVATE
+    include/
+)
+
+target_link_libraries($1 PRIVATE
     raylib
 )
 """ >> CMakeLists.txt

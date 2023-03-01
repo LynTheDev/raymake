@@ -93,7 +93,7 @@ echo "Creating CMakeFile."
 echo """cmake_minimum_required(VERSION 3.10)
 project($1)
 
-add_sudirectory(lib/raylib)
+add_subdirectory(external/raylib)
 
 add_executable($1
     batch.cpp
